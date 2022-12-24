@@ -29,7 +29,7 @@ class Transaction(models.Model):
     A transaction is a series of operations that are performed in a transaction.
     """
 
-    amount = models.DecimalField(max_digits=15, decimal_places=2)
+    amount = models.DecimalField(max_digits=104, decimal_places=5)
     currency = models.ForeignKey(Currency, related_name="transactions", on_delete=models.PROTECT)
     category = models.ForeignKey(Category, related_name="transactions", on_delete=models.SET_NULL, blank=True, null=True)
     descriptions = models.TextField(blank=True)
@@ -37,11 +37,3 @@ class Transaction(models.Model):
 
     def __str__(self):
         return str(self.id)
-
-    def save(self, *args, **kwargs):
-        super(Transaction, self).save(*args, **kwargs)
-        self.currency = self.currency.code
-        self.category = self.category.name
-        self.date = self.date
-        self.save()
-        return self

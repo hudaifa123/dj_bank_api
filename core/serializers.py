@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from core.models import Category, Currency
+from core.models import Category, Currency, Transaction
 
 
 class CurrencySerializer(serializers.ModelSerializer):
@@ -20,3 +20,34 @@ class CategorySerializer(serializers.ModelSerializer):
             "id",
             "name",
         )
+
+
+class WriteTransactionSerializer(serializers.ModelSerializer):
+    currency = serializers.SlugRelatedField(slug_field="code", queryset=Currency.objects.all())
+
+    class Meta:
+        model = Transaction
+        fields = (
+            "date",
+            "amount",
+            "currency",
+            "category",
+            "descriptions",
+        )
+
+
+class ReadTransactionSerializer(serializers.ModelSerializer):
+    currency = CurrencySerializer()
+    category = CategorySerializer()
+
+    class Meta:
+        model = Transaction
+        fields = (
+            "id",
+            "date",
+            "amount",
+            "currency",
+            "category",
+            "descriptions",
+        )
+        read_only_fields = fields
