@@ -1,8 +1,10 @@
 from rest_framework.generics import ListAPIView
 from rest_framework.viewsets import ModelViewSet
 from rest_framework import filters, permissions, views, response
+from rest_framework.renderers import JSONRenderer
 from django_filters.rest_framework import DjangoFilterBackend
 from core.models import Category, Currency, Transaction
+from core.permissions import IsAdminOrReadOnly
 from core.reports import transaction_report
 from core.serializers import (
     ReportEntrySerializer,
@@ -26,13 +28,16 @@ class TransactionReportAPIView(views.APIView):
         return response.Response(data=serializer.data)
 
 
-class CurrencyListAPIView(ListAPIView):
+class CurrencyModelViewSet(ModelViewSet):
+    permission_classes = [IsAdminOrReadOnly]
     queryset = Currency.objects.all()
     serializer_class = CurrencySerializer
+    pagination_class = None
+    renderer_classes = [JSONRenderer]
 
 
 class CategoryModelViewSet(ModelViewSet):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.DjangoModelPermissions]
     serializer_class = CategorySerializer
 
     def get_queryset(self):
