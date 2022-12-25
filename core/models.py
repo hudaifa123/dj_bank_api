@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 
 class Currency(models.Model):
@@ -18,6 +19,7 @@ class Category(models.Model):
     Category model class for category models that have a category attribute defined
     """
 
+    user = models.ForeignKey(User, related_name="categories", on_delete=models.CASCADE)
     name = models.CharField(max_length=100, blank=True)
 
     def __str__(self):
@@ -29,6 +31,7 @@ class Transaction(models.Model):
     A transaction is a series of operations that are performed in a transaction.
     """
 
+    user = models.ForeignKey(User, related_name="transactions", on_delete=models.CASCADE)
     amount = models.DecimalField(max_digits=104, decimal_places=5)
     currency = models.ForeignKey(Currency, related_name="transactions", on_delete=models.PROTECT)
     category = models.ForeignKey(Category, related_name="transactions", on_delete=models.SET_NULL, blank=True, null=True)

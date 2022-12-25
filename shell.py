@@ -46,3 +46,9 @@ for i in range(2, 1000):
     len(txs)
 
 Transaction.objects.bulk_create(txs)
+
+
+# {
+#   "username": "Maria",
+#   "password": "Your password can’t be entirely numeric."
+# }
