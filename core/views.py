@@ -1,9 +1,29 @@
 from rest_framework.generics import ListAPIView
 from rest_framework.viewsets import ModelViewSet
-from rest_framework import filters, permissions
+from rest_framework import filters, permissions, views, response
 from django_filters.rest_framework import DjangoFilterBackend
 from core.models import Category, Currency, Transaction
-from core.serializers import CategorySerializer, CurrencySerializer, WriteTransactionSerializer, ReadTransactionSerializer
+from core.reports import transaction_report
+from core.serializers import (
+    ReportEntrySerializer,
+    ReportParametersSerializer,
+    CategorySerializer,
+    CurrencySerializer,
+    WriteTransactionSerializer,
+    ReadTransactionSerializer,
+)
+
+
+class TransactionReportAPIView(views.APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        params_serializer = ReportParametersSerializer(data=request.GET, context={"request": request})
+        params_serializer.is_valid(raise_exception=True)
+        params = params_serializer.save()
+        data = transaction_report(params)
+        serializer = ReportEntrySerializer(instance=data, many=True)
+        return response.Response(data=serializer.data)
 
 
 class CurrencyListAPIView(ListAPIView):
